@@ -81,7 +81,7 @@ export default function Home() {
           text: "Personne enregistrée avec succès !",
         });
         // Basculer vers la liste après enregistrement
-        setTimeout(() => setActiveSection("list"), 1500);
+        // setTimeout(() => setActiveSection("list"), 1500);
       } else {
         const errorData = await response.json();
         throw new Error(errorData.error || "Erreur lors de l'enregistrement");
@@ -127,35 +127,6 @@ export default function Home() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Navigation des sections */}
-        {/* <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-full p-2 shadow-lg">
-            <div className="flex space-x-2">
-              <button
-                onClick={() => setActiveSection("form")}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
-                  activeSection === "form"
-                    ? "bg-red-600 text-white shadow-lg transform scale-105"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                📝 Formulaire
-              </button>
-              <button
-                onClick={() => setActiveSection("list")}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
-                  activeSection === "list"
-                    ? "bg-red-600 text-white shadow-lg transform scale-105"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }`}
-              >
-                📋 Liste ({personnes.length})
-              </button>
-            </div>
-          </div>
-        </div> */}
-
-        {/* Message de notification avec animation */}
         {message && (
           <div
             className={`mb-6 p-4 rounded-lg shadow-lg animate-slide-in-down ${

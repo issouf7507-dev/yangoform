@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "lucide-react";
+import { Save, User } from "lucide-react";
 import { useState } from "react";
 
 interface PersonneFormData {
@@ -31,6 +31,7 @@ export default function PersonneForm({
   });
 
   const [focusedField, setFocusedField] = useState<string>("");
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,6 +44,10 @@ export default function PersonneForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
+
+    // Afficher le message de succès
+    setShowSuccess(true);
+
     // Réinitialiser le formulaire après soumission
     setFormData({
       nom: "",
@@ -52,10 +57,38 @@ export default function PersonneForm({
       entite: "",
       poste: "",
     });
+
+    // Masquer le message de succès après 5 secondes
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 5000);
   };
 
   return (
     <div className="bg-white rounded-2xl shadow-2xl p-8 border border-red-100 animate-fade-in">
+      {/* Message de succès */}
+      {showSuccess && (
+        <div className="fixed inset-0 bg-[#0000005e] bg-opacity-50 flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-white rounded-2xl p-8 max-w-md mx-4 text-center animate-bounce-in">
+            <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+              <span className="text-4xl">✅</span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-4">
+              Succès ! 🎉
+            </h3>
+            <p className="text-gray-600 mb-6">
+              La personne a été enregistrée avec succès dans la base de données.
+            </p>
+            <button
+              onClick={() => setShowSuccess(false)}
+              className="bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-6 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-300 transform hover:scale-105"
+            >
+              Continuer
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="text-center mb-8">
         <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
           <span className="text-2xl text-white">
@@ -291,7 +324,9 @@ export default function PersonneForm({
               </div>
             ) : (
               <div className="flex items-center justify-center space-x-2">
-                <span>💾</span>
+                <span>
+                  <Save />
+                </span>
                 <span>Enregistrer</span>
               </div>
             )}

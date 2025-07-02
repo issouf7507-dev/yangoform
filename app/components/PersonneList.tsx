@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePDF } from "../hooks/usePDF";
 
 interface Personne {
   id: number;
@@ -24,6 +25,7 @@ export default function PersonneList({
 }: PersonneListProps) {
   const [isPrinting, setIsPrinting] = useState(false);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const { generateAndDownloadPDF, isGenerating } = usePDF();
 
   const handlePrint = () => {
     setIsPrinting(true);
@@ -114,10 +116,11 @@ export default function PersonneList({
               🔄 Actualiser
             </button>
             <button
-              onClick={handlePrint}
-              className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg"
+              onClick={() => generateAndDownloadPDF(personnes)}
+              disabled={isGenerating}
+              className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              🖨️ Imprimer
+              {isGenerating ? "⏳ Génération..." : "📄 Télécharger PDF"}
             </button>
           </div>
         </div>
