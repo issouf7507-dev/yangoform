@@ -22,7 +22,7 @@ export const usePDF = () => {
 
       // Créer le document PDF
       const pdfDoc = pdf(React.createElement(PersonnePDF, { personnes }));
-
+      //   jd;
       // Générer le blob
       const blob = await pdfDoc.toBlob();
 
