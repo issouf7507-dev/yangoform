@@ -13,6 +13,8 @@ Une application Next.js moderne pour enregistrer et gérer les informations des 
 
 ## Prérequis
 
+kj
+
 - Node.js 18+
 - MySQL 8.0+
 - npm ou yarn
