@@ -45,7 +45,7 @@ export default function PersonneList({
 
   if (personnes.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-2xl p-8 border border-red-100 animate-fade-in">
+      <div className=" rounded-2xl shadow-2xl p-8 border border-red-100 bg-red-400">
         <div className="text-center">
           <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
             <span className="text-3xl text-white">📋</span>
@@ -61,7 +61,7 @@ export default function PersonneList({
               onClick={onRefresh}
               className="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
-              🔄 Actualiser
+              Actualiser la liste
             </button>
           </div>
         </div>
@@ -92,7 +92,7 @@ export default function PersonneList({
         }
       `}</style>
 
-      <div className="bg-white rounded-2xl shadow-2xl p-8 border border-red-100 animate-fade-in">
+      <div className=" rounded-2xl  p-8 border border-red-100 animate-fade-in">
         <div className="flex justify-between items-center mb-8 no-print">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">

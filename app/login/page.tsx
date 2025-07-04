@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { User } from "lucide-react";
 
 export default function LoginPage() {
   const [credentials, setCredentials] = useState({
@@ -37,26 +38,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-red-100 to-red-200 flex items-center justify-center p-4">
+    <div className="relative min-h-screen bg-[url(/img/bg2.png)] bg-center bg-cover bg-no-repeat px-10 flex items-center justify-center">
       <div className="w-full max-w-md">
         {/* En-tête */}
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-gradient-to-r from-red-600 to-red-700 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
-            <span className="text-3xl text-white">🔐</span>
-          </div>
           <h1 className="text-4xl font-bold text-gray-800 mb-2">Connexion</h1>
           <p className="text-gray-600">Accédez à la liste des participants</p>
         </div>
 
         {/* Formulaire de connexion */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8 border border-red-100 animate-fade-in">
+        <div className="bg-[#f1eae7] rounded-2xl shadow-2xl p-8 border  animate-fade-in">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label
                 htmlFor="username"
-                className="block text-sm font-semibold text-gray-700 mb-2"
+                className=" flex items-center  text-sm font-semibold text-gray-700 mb-2"
               >
-                👤 Nom d'utilisateur
+                <User />
+                Nom d'utilisateur
               </label>
               <input
                 type="text"
@@ -65,7 +64,7 @@ export default function LoginPage() {
                 value={credentials.username}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all duration-300"
+                className=" w-full border h-14 border-[#000] rounded-lg focus:border-red-400 focus-visible:border-red-400 focus:border-4 outline-0 transition-all px-2 placeholder:text-gray-400 text-black"
                 placeholder="Entrez votre nom d'utilisateur"
               />
             </div>
@@ -84,7 +83,8 @@ export default function LoginPage() {
                 value={credentials.password}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all duration-300"
+                className=" w-full border h-14 border-[#000] rounded-lg focus:border-red-400 focus-visible:border-red-400 focus:border-4 outline-0 transition-all px-2 placeholder:text-gray-400 text-black"
+                // placeholder="Entrez votre nom d'utilisateur"
                 placeholder="Entrez votre mot de passe"
               />
             </div>
@@ -102,7 +102,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+              className="flex items-center gap-2 bg-red-500 px-10 py-3 rounded-full font-semibold  hover:bg-red-600 w-full justify-center"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center space-x-2">
@@ -111,7 +111,6 @@ export default function LoginPage() {
                 </div>
               ) : (
                 <div className="flex items-center justify-center space-x-2">
-                  <span>🚀</span>
                   <span>Se connecter</span>
                 </div>
               )}

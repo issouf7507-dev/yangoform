@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import PersonneForm from "./components/PersonneForm";
 import PersonneList from "./components/PersonneList";
+import Image from "next/image";
+import { ArrowRight, Check, Loader2, Save } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface Personne {
   id: number;
@@ -25,45 +28,35 @@ interface PersonneFormData {
 }
 
 export default function Home() {
-  const [personnes, setPersonnes] = useState<Personne[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [step, setStep] = useState(1);
+  const [formLoader, setFormLoader] = useState(false);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
   } | null>(null);
-  const [activeSection, setActiveSection] = useState<"form" | "list">("form");
 
-  // Charger les personnes au montage du composant
-  useEffect(() => {
-    fetchPersonnes();
-  }, []);
+  const [formData, setFormData] = useState<PersonneFormData>({
+    nom: "",
+    prenoms: "",
+    telephone: "",
+    email: "",
+    entite: "",
+    poste: "",
+  });
 
-  const fetchPersonnes = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/personnes");
-      if (response.ok) {
-        const data = await response.json();
-        setPersonnes(data);
-      } else {
-        throw new Error("Erreur lors du chargement des données");
-      }
-    } catch (error) {
-      console.error("Erreur:", error);
-      setMessage({
-        type: "error",
-        text: "Erreur lors du chargement des données",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  const handlechange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSubmit = async (formData: PersonneFormData) => {
-    setIsSubmitting(true);
-    setMessage(null);
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setFormLoader(true);
 
+    // setTimeout(() => {
     try {
       const response = await fetch("/api/personnes", {
         method: "POST",
@@ -74,172 +67,266 @@ export default function Home() {
       });
 
       if (response.ok) {
-        const newPersonne = await response.json();
-        setPersonnes((prev) => [newPersonne, ...prev]);
-        setMessage({
-          type: "success",
-          text: "Personne enregistrée avec succès !",
-        });
-        // Basculer vers la liste après enregistrement
-        // setTimeout(() => setActiveSection("list"), 1500);
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Erreur lors de l'enregistrement");
+        setTimeout(() => {
+          setStep(3);
+          setFormData({
+            nom: "",
+            prenoms: "",
+            telephone: "",
+            email: "",
+            entite: "",
+            poste: "",
+          });
+        }, 3000);
       }
     } catch (error) {
-      console.error("Erreur:", error);
-      setMessage({
-        type: "error",
-        text:
-          error instanceof Error
-            ? error.message
-            : "Erreur lors de l'enregistrement",
-      });
     } finally {
-      setIsSubmitting(false);
+      setFormLoader(false);
     }
+    // }, 3000);
+    // console.log(formData);
   };
 
+  const [isLoadingStep, setIsLoadingStep] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoadingStep(true);
+    }, 2000);
+
+    setTimeout(() => {
+      setStep(2);
+    }, 4000);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-red-100 to-red-200">
-      {/* En-tête avec animation */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-red-600 to-red-800 text-white">
-        <div className="absolute inset-0 bg-black opacity-10"></div>
-        <div className="relative container mx-auto px-4 py-12">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold mb-4 animate-fade-in-down">
-              Système de Gestion des Personnes
-            </h1>
-            <p className="text-xl text-red-100 animate-fade-in-up">
-              Enregistrez et gérez les informations des personnes
-            </p>
+    <AnimatePresence mode="wait">
+      {/* Step 1 */}
+      {step === 1 && (
+        <motion.div
+          key="step1"
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 100 }}
+          transition={{ duration: 0.5 }}
+          className="relative min-h-screen bg-[url(/img/Design.png)] bg-center bg-cover bg-no-repeat px-10 "
+        >
+          {isLoadingStep && (
+            <div className="absolute bottom-10 left-1/2 -translate-1/2">
+              <Loader2 size={40} className="animate-spin text-white text-5xl" />
+            </div>
+          )}
 
-            {/* Bouton d'accès administrateur */}
-          </div>
-        </div>
+          <div className="grid md:grid-cols-2">
+            <div className="flex justify-center items-center h-screen flex-col">
+              {/* <h1 className="text-8xl font-bold uppercase">Yango hub Africa</h1> */}
 
-        {/* Éléments décoratifs animés */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-          <div className="absolute -top-10 -left-10 w-20 h-20 bg-white opacity-10 rounded-full animate-bounce"></div>
-          <div className="absolute top-20 right-20 w-16 h-16 bg-white opacity-10 rounded-full animate-pulse"></div>
-          <div className="absolute bottom-10 left-1/4 w-12 h-12 bg-white opacity-10 rounded-full animate-spin"></div>
-        </div>
-      </div>
+              <Image
+                src="/img/Title.png"
+                alt="Design"
+                width={800}
+                height={800}
+                className="object-cover"
+              />
 
-      <div className="container mx-auto px-4 py-8">
-        {message && (
-          <div
-            className={`mb-6 p-4 rounded-lg shadow-lg animate-slide-in-down ${
-              message.type === "success"
-                ? "bg-green-100 border-l-4 border-green-500 text-green-700"
-                : "bg-red-100 border-l-4 border-red-500 text-red-700"
-            }`}
-          >
-            <div className="flex items-center">
-              <span className="text-2xl mr-3">
-                {message.type === "success" ? "✅" : "❌"}
-              </span>
-              {message.text}
+              <Image
+                src="/img/Subtitle.png"
+                alt="Design"
+                width={800}
+                height={800}
+                className="object-cover mt-5"
+              />
+
+              {/* <p className="text-5xl">#AfricaInMotion #FromAbidjanToTheWorld</p> */}
+            </div>
+            <div className="md:flex justify-center items-center h-screen hidden">
+              <Image
+                src="/img/Carte.png"
+                alt="Design"
+                width={700}
+                height={700}
+                className="object-cover"
+              />
             </div>
           </div>
-        )}
+        </motion.div>
+      )}
 
-        {/* Contenu principal avec animation de transition */}
-        <div className="relative">
-          <div
-            className={`transition-all duration-500 ease-in-out ${
-              activeSection === "form"
-                ? "opacity-100 translate-x-0"
-                : "opacity-0 translate-x-full absolute inset-0"
-            }`}
-          >
-            <PersonneForm onSubmit={handleSubmit} isLoading={isSubmitting} />
-          </div>
+      {/* Step 2 */}
+      {step === 2 && (
+        <motion.div
+          key="step2"
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -100 }}
+          transition={{ duration: 0.5 }}
+          className="relative min-h-screen bg-[url(/img/Design.png)] bg-center bg-cover bg-no-repeat"
+        >
+          <div className=" h-screen grid md:grid-cols-2">
+            <div></div>
+            <div className="bg-amber-50 p-10">
+              <div>
+                <div>
+                  <Image
+                    src="/img/Yango_(entreprise).png"
+                    alt="Design"
+                    width={200}
+                    height={200}
+                    className="object-cover"
+                  />
+                </div>
+              </div>
 
-          <div
-            className={`transition-all duration-500 ease-in-out ${
-              activeSection === "list"
-                ? "opacity-100 translate-x-0"
-                : "opacity-0 -translate-x-full absolute inset-0"
-            }`}
-          >
-            <PersonneList personnes={personnes} onRefresh={fetchPersonnes} />
-          </div>
-        </div>
+              <div className="text-black mt-10">
+                <h1 className="text-5xl font-bold italic">Bienvenu !</h1>
+                <p>Inscrivez vous sur la liste</p>
+              </div>
 
-        {/* Indicateur de chargement avec animation */}
-        {isLoading && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fade-in">
-            <div className="bg-white p-8 rounded-2xl shadow-2xl animate-bounce">
-              <div className="flex items-center space-x-4">
-                <div className="animate-spin rounded-full h-8 w-8 border-4 border-red-600 border-t-transparent"></div>
-                <span className="text-gray-700 font-medium">Chargement...</span>
+              <div className="mt-10">
+                <form action="" onSubmit={handleSubmit}>
+                  <div className="grid md:grid-cols-2 gap-10 mb-8">
+                    <div className="flex flex-col">
+                      <label htmlFor="" className="text-black mb-2">
+                        Nom *
+                      </label>
+                      <input
+                        className="border h-10 border-[#000] rounded-lg focus:border-red-400 focus-visible:border-red-400 focus:border-4 outline-0 transition-all px-2 placeholder:text-gray-400 text-black"
+                        type="text"
+                        placeholder="Entrez votre nom"
+                        name="nom"
+                        id="nom"
+                        value={formData.nom}
+                        onChange={handlechange}
+                        required
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <label htmlFor="" className="text-black mb-2">
+                        Prenoms *
+                      </label>
+                      <input
+                        className="border h-10 border-[#000] rounded-lg focus:border-red-400 focus-visible:border-red-400 focus:border-4 outline-0 transition-all px-2 placeholder:text-gray-400 text-black"
+                        type="text"
+                        placeholder="Entrez votre prenoms"
+                        name="prenoms"
+                        id="prenoms"
+                        value={formData.prenoms}
+                        onChange={handlechange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col mb-8">
+                    <label htmlFor="" className="text-black mb-2">
+                      Nunero de telephone *
+                    </label>
+                    <input
+                      className="border h-10 border-[#000] rounded-lg focus:border-red-400 focus-visible:border-red-400 focus:border-4 outline-0 transition-all px-2 placeholder:text-gray-400 text-black"
+                      placeholder="Entrez votre numéro..."
+                      type="text"
+                      name="telephone"
+                      id="telephone"
+                      value={formData.telephone}
+                      onChange={handlechange}
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col mb-8">
+                    <label htmlFor="" className="text-black mb-2">
+                      Email (optionnel)
+                    </label>
+                    <input
+                      className="border h-10 border-[#000] rounded-lg focus:border-red-400 focus-visible:border-red-400 focus:border-4 outline-0 transition-all px-2 placeholder:text-gray-400 text-black"
+                      type="email"
+                      placeholder="Entrez votre email"
+                      name="email"
+                      id="email"
+                      value={formData.email}
+                      onChange={handlechange}
+                    />
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-10">
+                    <div className="flex flex-col">
+                      <label htmlFor="" className="text-black mb-2">
+                        Entité *
+                      </label>
+                      <input
+                        className="border h-10 border-[#000] rounded-lg focus:border-red-400 focus-visible:border-red-400 focus:border-4 outline-0 transition-all px-2 placeholder:text-gray-400 text-black"
+                        type="text"
+                        placeholder="Entrez votre Entité"
+                        name="entite"
+                        id="entite"
+                        value={formData.entite}
+                        onChange={handlechange}
+                        required
+                      />
+                    </div>
+
+                    <div className="flex flex-col">
+                      <label htmlFor="" className="text-black mb-2">
+                        Poste *
+                      </label>
+                      <input
+                        className="border h-10 border-[#000] rounded-lg focus:border-red-400 focus-visible:border-red-400 focus:border-4 outline-0 transition-all px-2 placeholder:text-gray-400 text-black"
+                        placeholder="Entrez votre poste"
+                        type="text"
+                        name="poste"
+                        id="poste"
+                        value={formData.poste}
+                        onChange={handlechange}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <button className="flex items-center gap-2 bg-red-500 px-10 py-3 rounded-full font-semibold  hover:bg-red-600">
+                        Enregistrer
+                        {formLoader ? (
+                          <Loader2 className="animate-spin" />
+                        ) : (
+                          <ArrowRight className="ml-2" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </form>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </motion.div>
+      )}
 
-      {/* Styles CSS pour les animations */}
-      <style jsx global>{`
-        @keyframes fade-in-down {
-          from {
-            opacity: 0;
-            transform: translateY(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes slide-in-down {
-          from {
-            opacity: 0;
-            transform: translateY(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        .animate-fade-in-down {
-          animation: fade-in-down 1s ease-out;
-        }
-
-        .animate-fade-in-up {
-          animation: fade-in-up 1s ease-out 0.3s both;
-        }
-
-        .animate-slide-in-down {
-          animation: slide-in-down 0.5s ease-out;
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-      `}</style>
-    </div>
+      {/* Step 3 */}
+      {step === 3 && (
+        <motion.div
+          key="step3"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 1.2 }}
+          transition={{ duration: 0.5 }}
+          className="min-h-screen bg-[url(/img/Design.png)] bg-center bg-cover bg-no-repeat px-10 flex items-center justify-center"
+        >
+          <div className="bg-white w-[600px] rounded-2xl p-3 text-black opacity-90">
+            <div>
+              <h2 className="text-5xl font-bold text-center mb-2">Merci !</h2>
+              <p className="text-center text-2xl">
+                Votre présence a bien été enregistrée.
+              </p>
+              <div className="my-4 flex items-center justify-center">
+                <div className="border rounded-full border-red-500">
+                  <Check color="#f00" size={80} />
+                </div>
+              </div>
+              <p className="text-center text-xl">
+                Nous sommes ravis de vous compter parmi nos invités.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
